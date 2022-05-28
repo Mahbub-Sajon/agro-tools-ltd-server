@@ -27,12 +27,24 @@ const productsCollection = client.db('agroTools').collection('products');
 
 const orderCollection = client.db('agroTools').collection('order');
 
+
+//product showing in ui 
 app.get('/products', async(req, res) =>{
     const query = {};
     const cursor = productsCollection.find(query);
     const products = await cursor.toArray();
     res.send(products);
 });
+
+//ordered product showing in ui
+app.get('/ordered-products', async(req, res) =>{
+    const email = req.query.email;
+    const query = {email: email};
+    const cursor = orderCollection.find(query);
+    const orders = await cursor.toArray();
+    res.send(orders);
+});
+
 
 
 
