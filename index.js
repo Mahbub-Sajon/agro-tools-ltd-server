@@ -25,6 +25,7 @@ async function run() {
 await client.connect();
 const productsCollection = client.db('agroTools').collection('products');
 const orderCollection = client.db('agroTools').collection('order');
+const reviewCollection = client.db('agroTools').collection('review');
 
 
 //product showing in ui 
@@ -66,8 +67,15 @@ app.post('/order', async(req, res) =>{
     const order = req.body;
     const result = await orderCollection.insertOne(order);
     res.send(result);
-})
+});
 
+// review
+
+app.post('/review', async(req, res) =>{
+    const review = req.body;
+    const result = await reviewCollection.insertOne(review);
+    res.send(result);
+});
 
 
 
