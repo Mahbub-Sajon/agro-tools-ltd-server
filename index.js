@@ -36,6 +36,16 @@ app.get('/products', async(req, res) =>{
     res.send(products);
 });
 
+//review showing
+app.get('/review', async(req, res) =>{
+    const query = {};
+    const cursor = reviewCollection.find(query);
+    const review = await cursor.toArray();
+    res.send(review);
+});
+
+
+
 //ordered product showing in ui
 app.get('/ordered-products', async(req, res) =>{
     const email = req.query.email;
