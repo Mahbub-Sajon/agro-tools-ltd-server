@@ -24,7 +24,6 @@ async function run() {
     try {
 await client.connect();
 const productsCollection = client.db('agroTools').collection('products');
-
 const orderCollection = client.db('agroTools').collection('order');
 
 
@@ -45,7 +44,13 @@ app.get('/ordered-products', async(req, res) =>{
     res.send(orders);
 });
 
-
+//canceling order
+app.delete('/ordered-products/:id', async(req, res) => {
+    const id = req.params.id;
+    const query = {_id: ObjectId(id)};
+    const result = await orderCollection.deleteOne(query);
+    res.send(result);
+})
 
 
 //placing order
