@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const ObjectId = require('mongodb').ObjectId;
 const port = process.env.PORT || 5000;
@@ -29,6 +30,9 @@ const reviewCollection = client.db('agroTools').collection('review');
 const userCollection = client.db('agroTools').collection('users');
 
 
+
+
+
 //product showing in ui 
 app.get('/products', async(req, res) =>{
     const query = {};
@@ -50,6 +54,8 @@ app.get('/review', async(req, res) =>{
 //ordered product showing in ui
 app.get('/ordered-products', async(req, res) =>{
     const email = req.query.email;
+    const authorization = req.headers.authorization;
+    console.log('auth ', authorization);
     const query = {email: email};
     const cursor = orderCollection.find(query);
     const orders = await cursor.toArray();
@@ -90,6 +96,8 @@ app.put('/user/:email', async(req, res) => {
         $set: user, 
     };
     const result = await userCollection.updateOne(filter, updateDoc, options);
+    const token = jwt.sign({email: email}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'})
+    res.send({result, token});
 })
 
 // review
