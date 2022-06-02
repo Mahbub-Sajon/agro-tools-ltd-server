@@ -30,7 +30,21 @@ const reviewCollection = client.db('agroTools').collection('review');
 const userCollection = client.db('agroTools').collection('users');
 
 
+function verifyJWT (req, res, next){
+    const authHeader = req.headers.authorization;
+    if(!authHeader){
+        return res.status(401).send({message: 'unAuthorized access'});
+    }
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function(err, decoded){
+        if(err){
 
+            return res.status(403).send({message: 'Forbidden access'})
+        }
+        req.decoded = decoded;
+        next();
+    });
+} 
 
 
 //product showing in ui 
@@ -52,14 +66,19 @@ app.get('/review', async(req, res) =>{
 
 
 //ordered product showing in ui
-app.get('/ordered-products', async(req, res) =>{
+app.get('/ordered-products', verifyJWT, async(req, res) =>{
     const email = req.query.email;
-    const authorization = req.headers.authorization;
-    console.log('auth ', authorization);
-    const query = {email: email};
-    const cursor = orderCollection.find(query);
-    const orders = await cursor.toArray();
-    res.send(orders);
+
+    const decodedEmail = req.query.email;
+    if( email === decodedEmail){
+        const query = {email: email};
+        const cursor = orderCollection.find(query);
+        const orders = await cursor.toArray();
+        return res.send(orders);
+    }
+    else{
+        return res.status(403).send({message: 'Forbidden access'});
+    }
 });
 
 //canceling order
@@ -85,6 +104,12 @@ app.post('/order', async(req, res) =>{
     const result = await orderCollection.insertOne(order);
     res.send(result);
 });
+
+
+app.get('/all-users', async(req, res) => {
+    const users = await userCollection.find().toArray();
+    res.send(users);
+})
 
 
 app.put('/user/:email', async(req, res) => {
