@@ -26,6 +26,7 @@ await client.connect();
 const productsCollection = client.db('agroTools').collection('products');
 const orderCollection = client.db('agroTools').collection('order');
 const reviewCollection = client.db('agroTools').collection('review');
+const userCollection = client.db('agroTools').collection('users');
 
 
 //product showing in ui 
@@ -79,8 +80,19 @@ app.post('/order', async(req, res) =>{
     res.send(result);
 });
 
-// review
 
+app.put('/user/:email', async(req, res) => {
+    const email = req.params.email;
+    const user = req.body;
+    const filter = {email: email};
+    const options = {upsert: true};
+    const updateDoc = {
+        $set: user, 
+    };
+    const result = await userCollection.updateOne(filter, updateDoc, options);
+})
+
+// review
 app.post('/review', async(req, res) =>{
     const review = req.body;
     const result = await reviewCollection.insertOne(review);
