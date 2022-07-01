@@ -10,7 +10,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 
 // middleware
-app.use(cors({origin: 'https://agro-tools-ltd.web.app/'}));
+app.use(cors({origin: 'https://agro-tools-ltd.web.app'}));
 app.use(express.json());
 
 
